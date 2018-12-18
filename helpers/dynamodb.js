@@ -7,11 +7,12 @@ export const findActiveNoFapPromise = userid => {
     return new Promise((resolve, reject) => {
         dynamoDb.scan({
             TableName: 'nofaps',
-            FilterExpression: `attribute_not_exists(ending) and userid = :userid`,
+            FilterExpression: `attribute_not_exists(ending) and #userid = :userid`,
+            ExpressionAttributeNames: {
+                '#userid': 'userid'
+            },
             ExpressionAttributeValues: {
-                ":userid": {
-                    N: userid
-                }
+                ':userid': userid
             }
         }, (err, data) => {
             if (err) {
@@ -24,35 +25,40 @@ export const findActiveNoFapPromise = userid => {
     })
 }
 
-export const startNoFapPromise = Item => {
-    Item.uuid = uuid.v1()
-    Item.start = new Date().getTime()
-    if (Item.comment == '') delete Item.comment
+export const startNoFapPromise = (userid, username) => {
+    let Item = {
+        uuid: uuid.v1(),
+        start: new Date().getTime(),
+        userid, username
+    }
 
     return new Promise((resolve, reject) => {
         dynamoDb.put({TableName, Item}, (err, data) => {
             if (err) reject(err)
-            else resolve(data)
+            // put won't return inserted values unless we explicitly retrieve item afterwards
+            // so we'll just return what we inserted
+            else resolve(Item)
         })
     })
 }
 
-export const finishNoFapPromise = (noFap, comment) => {
+export const finishNoFapPromise = (noFap) => {
     let now = new Date().getTime()
 
     return new Promise((resolve, reject) => {
-        dynamoDb.updateItem({
+        dynamoDb.update({
+            TableName,
             Key: {
-                uuid: {S: noFap.uuid},
+                uuid: noFap.uuid,
             },
             ExpressionAttributeValues: {
                 ':ending': now,
-                ':comment': comment ? comment : ' '
             },
-            UpdateExpression: "SET ending = :ending, finish_comment = :comment"
+            UpdateExpression: "SET ending = :ending",
+            ReturnValues: "ALL_NEW"
         }, (err, data) => {
             if (err) reject(err)
-            else resolve(data)
+            else resolve(data.Attributes)
         })
     })
 }
@@ -60,7 +66,7 @@ export const finishNoFapPromise = (noFap, comment) => {
 export const reflectOnNoFapPromise = (noFap, comment) => {
     let Item = {
         uuid: uuid.v1(),
-        nofap_uuid: nofap.uuid,
+        nofap_uuid: noFap.uuid,
         comment,
         timestamp: new Date().getTime()
     }
@@ -68,7 +74,7 @@ export const reflectOnNoFapPromise = (noFap, comment) => {
     return new Promise((resolve, reject) => {
         dynamoDb.put({TableName: 'nofap_reflections', Item}, (err, data) => {
             if (err) reject(err)
-            else resolve(data)
+            else resolve(Item)
         })
     })
 }

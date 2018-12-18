@@ -4,6 +4,7 @@ plugins:
   - serverless-webpack
 provider:
   name: aws
+  stage: ${opt:stage, 'dev'}
   runtime: nodejs8.10
   iamRoleStatements:
     - Effect: Allow
@@ -18,11 +19,11 @@ provider:
 
 functions:
   hello:
-    handler: handler.hello
+    handler: handler.nofap
     events:
        - http:
            path: /
-           method: get
+           method: post
            integration: LAMBDA
 resources:
   Resources:
