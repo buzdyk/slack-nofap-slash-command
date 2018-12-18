@@ -35,7 +35,6 @@ export const hello = async (event, context, callback) => {
                 callback(null, startNoFapDuplicate(existingNoFap))
                 return
             }
-
             let username = data.user_name
             noFap = await startNoFapPromise({userid, username, start_comment: argument})
             callback(null, noFapStarted(username))
@@ -44,7 +43,6 @@ export const hello = async (event, context, callback) => {
             if (!existingNoFap) {
                 return callback(null, activeNoFap404())
             }
-
             noFap = await finishNoFapPromise(existingNoFap, argument)
             callback(null, noFapFinished(noFap))
             break
@@ -53,11 +51,9 @@ export const hello = async (event, context, callback) => {
                 callback(null, activeNoFap404())
                 return
             }
-
             if (!argument) {
                 callback(null, genericError('Can\'t reflect without a thought!'))
             }
-
             reflectOnNoFapPromise(existingNoFap, argument)
             callback(null, noFapReflection(existingNoFap, argument))
             break
