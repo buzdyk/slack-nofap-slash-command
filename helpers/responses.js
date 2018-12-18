@@ -1,5 +1,6 @@
-const getNoFapDays = nofap => {
-    return 5
+const getNoFapDuration = nofap => {
+    let diff = new Date().getTime() - nofap.start
+    return (diff/(1000*60*60*24)).toFixed(2)
 }
 
 // switch username to NoFap entry
@@ -8,12 +9,12 @@ export const noFapStarted = (username) => {
 }
 
 export const noFapFinished = (nofap) => {
-    let days = getNoFapDays(nofap)
+    let days = getNoFapDuration(nofap)
     return `${username} hasnt fapped for ${days} days`
 }
 
 export const noFapReflection = (nofap, thought) => {
-    let days = getNoFapDays(nofap)
+    let days = getNoFapDuration(nofap)
     return `It\'s been ${days} day of ${nofap.username} NoFap and he thought: "${thought}"`
 }
 
@@ -32,8 +33,17 @@ export const noFapCmd404 = () => {
 }
 
 export const startNoFapDuplicate = (nofap) => {
+    let days = getNoFapDuration(nofap)
+
     return {
         response_type: 'ephemeral',
-        text: 'You are already is on the journey'
+        text: `You are already on the journey - ${days} days so far`
+    }
+}
+
+export const genericError = error => {
+    return {
+        response_type: 'ephemeral',
+        text: error
     }
 }

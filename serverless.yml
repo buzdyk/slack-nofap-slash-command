@@ -38,12 +38,12 @@ resources:
             AttributeName: uuid
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-    nofapsReflectionsTable:
+          ReadCapacityUnits: 3
+          WriteCapacityUnits: 3
+    nofapReflectionsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: nofaps
+        TableName: nofap_reflections
         AttributeDefinitions:
           - AttributeName: uuid
             AttributeType: S
@@ -52,5 +52,5 @@ resources:
             AttributeName: uuid
             KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 2
+          WriteCapacityUnits: 2

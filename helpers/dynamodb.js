@@ -3,15 +3,14 @@ const dynamoDb = new DynamoDB.DocumentClient()
 const TableName = 'nofaps'
 import * as uuid from 'uuid'
 
-const findActiveNoFapPromise = userid => {
+export const findActiveNoFapPromise = userid => {
     return new Promise((resolve, reject) => {
         dynamoDb.scan({
             TableName: 'nofaps',
-            FilterExpression: "attribute_not_exists(ending)",
-            KeyConditions: {
-                userid: {
-                    ComparisonOperator: 'eq',
-                    AttributeValueList: [userid]
+            FilterExpression: `attribute_not_exists(ending) and userid = :userid`,
+            ExpressionAttributeValues: {
+                ":userid": {
+                    N: userid
                 }
             }
         }, (err, data) => {
@@ -25,11 +24,12 @@ const findActiveNoFapPromise = userid => {
     })
 }
 
-const startNoFapPromise = Item => {
-    return new Promise((resolve, reject) => {
-        Item.uuid = uuid.v1()
-        Item.start = new Date().getTime()
+export const startNoFapPromise = Item => {
+    Item.uuid = uuid.v1()
+    Item.start = new Date().getTime()
+    if (Item.comment == '') delete Item.comment
 
+    return new Promise((resolve, reject) => {
         dynamoDb.put({TableName, Item}, (err, data) => {
             if (err) reject(err)
             else resolve(data)
@@ -37,7 +37,7 @@ const startNoFapPromise = Item => {
     })
 }
 
-const finishNoFapPromise = (noFap, comment) => {
+export const finishNoFapPromise = (noFap, comment) => {
     let now = new Date().getTime()
 
     return new Promise((resolve, reject) => {
@@ -47,9 +47,9 @@ const finishNoFapPromise = (noFap, comment) => {
             },
             ExpressionAttributeValues: {
                 ':ending': now,
-                ':comment': comment
+                ':comment': comment ? comment : ' '
             },
-            UpdateExpression: "SET ending = :ending, comment = :comment"
+            UpdateExpression: "SET ending = :ending, finish_comment = :comment"
         }, (err, data) => {
             if (err) reject(err)
             else resolve(data)
@@ -57,7 +57,7 @@ const finishNoFapPromise = (noFap, comment) => {
     })
 }
 
-const reflectOnNoFap = (noFap, comment) => {
+export const reflectOnNoFapPromise = (noFap, comment) => {
     let Item = {
         uuid: uuid.v1(),
         nofap_uuid: nofap.uuid,
