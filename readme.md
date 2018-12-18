@@ -1,6 +1,6 @@
 # NoFAP™
 
-This is a slash command which helps to track NoFAP periods in you life. Conveniently it is a slash command for Slack!
+This is a slash command which helps to track NoFAP periods in your life. Conveniently it is a slash command for Slack!
 
 Usage:
 
