@@ -1,6 +1,7 @@
 import dateformat from 'dateformat'
 import {getSlackRankByDuration} from './utils'
 
+// todo use function from utils
 const getNoFapDuration = noFap => {
     let diff = new Date().getTime() - noFap.start
     return (diff/(1000*60*60*24)).toFixed(2)
@@ -67,6 +68,15 @@ export const noFapStats = (stats) => {
     }
 }
 
+export const topNoFaps = topNoFaps => {
+    return {
+        text: `Top boys:\n` + _.reduce(topNoFaps, (res, noFap) => {
+            return res + `\n*${noFap.username}*: ${getNoFapDuration(noFap)} days`
+        }, ''),
+        response_type: 'in_channel'
+    }
+}
+
 export const activeNoFap404 = () => {
     return {
         response_type: 'ephemeral',
@@ -113,6 +123,7 @@ NoFap slash commands:
 - _/nofap reflect comment_ add a comment to your current NoFap history
 - _/nofap oopsie (optional comment)_ - ends your NoFap. Hint: do not start a new NoFap right away. Have some time and think of your motivation
 - _/nofap stats_ - displays your info (privately)
+- _/nofap top_ – displays top 3 heroes
 
 Rules:
 - Using your hand / flashlight vagina / pillow in order to fap is not allowed

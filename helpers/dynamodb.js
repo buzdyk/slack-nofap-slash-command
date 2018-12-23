@@ -7,10 +7,15 @@ import * as _ from 'lodash'
 const noFapsTable = 'nofaps'
 const reflectionsTable = 'nofap_reflections'
 
-const scanPromise = (TableName, FilterExpression, ExpressionAttributeNames, ExpressionAttributeValues) => {
+const scanPromise = (TableName, FilterExpression, ExpressionAttributeNames = null, ExpressionAttributeValues = null) => {
     return new Promise((resolve, reject) => {
-        let handler = (err, data) => err ? reject(err) : resolve(data.Items)
-        dynamoDb.scan({TableName, FilterExpression, ExpressionAttributeNames, ExpressionAttributeValues}, handler)
+        let handler = (err, data) => err ? reject(err) : resolve(data.Items),
+            params = {TableName, FilterExpression}
+
+        if (ExpressionAttributeNames) params['ExpressionAttributeNames'] = ExpressionAttributeNames
+        if (ExpressionAttributeValues) params['ExpressionAttributeValues'] = ExpressionAttributeValues
+
+        dynamoDb.scan(params, handler)
     })
 }
 
@@ -114,4 +119,9 @@ export const reflectOnNoFapPromise = (noFap, comment) => {
 export const getNofapReflections = async noFapUuid => {
     let filter = `#uuid = :uuid`, names  = {'#uuid': 'nofap_uuid'}, values = {':uuid': noFapUuid}
     return _.orderBy(await scanPromise(reflectionsTable, filter, names, values), ['timestamp'], ['asc'])
+}
+
+export const getActiveNoFaps = async () => {
+    let items = await scanPromise(noFapsTable, `attribute_not_exists(ending)`)
+    return _.orderBy(items, ['start'], ['asc'])
 }
