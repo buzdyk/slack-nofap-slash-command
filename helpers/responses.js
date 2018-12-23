@@ -19,8 +19,8 @@ export const noFapStarted = (noFap, comment) => {
     }, comment)
 }
 
-export const noFapFinished = (noFap, reflections, comment) => {
-    let days = getNoFapDuration(noFap, comment),
+export const noFapFinished = (noFap, reflections) => {
+    let days = getNoFapDuration(noFap),
         text = `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${days} days :clap: :clap:`
 
     if (reflections.length) {
