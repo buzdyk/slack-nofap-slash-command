@@ -1,8 +1,8 @@
 export const getNoFapDuration = noFap => {
     if (!noFap) return 0
 
-    let diff = new Date().getTime() - noFap.start
-    return (diff/(1000*60*60*24)).toFixed(2)
+    let diff = (noFap.ending ? noFap.ending : new Date().getTime()) - noFap.start
+    return parseFloat((diff/(1000*60*60*24)).toFixed(2))
 }
 
 export const getSlackRankByDuration = duration => {

@@ -48,7 +48,6 @@ export const getUserStats = async userid => {
         durations = _.reduce(noFaps, (res, noFap) => {
             res.push(getNoFapDuration(noFap)); return res
         }, [])
-
     return {
         started_at: firstNoFap.start,
         count: noFaps.length,
