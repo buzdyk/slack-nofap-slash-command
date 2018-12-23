@@ -1,3 +1,6 @@
+import dateformat from 'dateformat'
+import {getSlackRankByDuration} from './utils'
+
 const getNoFapDuration = noFap => {
     let diff = new Date().getTime() - noFap.start
     return (diff/(1000*60*60*24)).toFixed(2)
@@ -30,6 +33,31 @@ export const noFapReflection = (noFap, comment) => {
         response_type: 'in_channel',
         text: `:thinking_face: It\'s been ${days} days of ${noFap.username} NoFap"`
     }, comment)
+}
+
+export const noFapStats = (stats) => {
+    let startedFormatted = stats.started_at ? dateformat(new Date(stats.started_at), 'mmmm dS, yyyy') : '–'
+
+    if (stats.count == 0) {
+        return {text: 'In order to see the stats you need to start your first NoFap by typing "/nofap start". Good luck!'}
+    }
+
+    let attachments = [{
+        fields: [
+            {title: `First NoFap`, value: `${startedFormatted}`, short: true},
+            {title: `Count`, value: stats.count, short: true},
+            {title: `Total`, value: `${stats.total_days} days`, short: true},
+            {title: `Avg`, value: `${stats.avg_days} days`, short: true},
+            {title: `Current`, value: `${stats.current_days} days`, short: true},
+            {title: `Rank`, value: getSlackRankByDuration(stats.total_days), short: true}
+        ]
+    }]
+
+    return {
+        text: `Your NoFap stats :information_desk_person:`,
+        attachments,
+        response_type: 'ephemeral',
+    }
 }
 
 export const activeNoFap404 = () => {
