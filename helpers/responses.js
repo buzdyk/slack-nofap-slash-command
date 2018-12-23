@@ -15,7 +15,7 @@ const addCommentMaybe = (message, comment) => {
 export const noFapStarted = (noFap, comment) => {
     return addCommentMaybe({
         response_type: 'in_channel',
-        text: `:fire: ${noFap.username} started the journey`
+        text: `:fire: ${noFap.username} started the journey. Type _/nofap about_ for more info.`
     }, comment)
 }
 
@@ -23,7 +23,7 @@ export const noFapFinished = (noFap, comment) => {
     let days = getNoFapDuration(noFap, comment)
     return addCommentMaybe({
         response_type: 'in_channel',
-        text: `:sweat_drops: Thats it for ${noFap.username}! He hasn't fapped for ${days} days :clap: :clap:`
+        text: `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${days} days :clap: :clap:`
     }, comment)
 }
 
@@ -87,5 +87,37 @@ export const genericError = error => {
     return {
         response_type: 'ephemeral',
         text: error
+    }
+}
+
+export const noFapAbout = () => {
+    return {
+        response_type: 'ephemeral',
+        text: `NoFap intention is to help you replace the habit of fapping with something more productive.
+
+What NoFap gives you:
+- motivation to bang chicks;
+- sharper wits;
+- more free time.
+
+NoFap slash commands:
+- _/about_ - shows this info
+- _/nofap start (optional comment)_ - starts a new NoFap
+- _/nofap reflect comment_ add a comment to your current NoFap history
+- _/nofap oopsie (optional comment)_ - ends your NoFap. Hint: do not start a new NoFap right away. Have some time and think of your motivation
+- _/nofap stats_ - displays your info (privately)
+
+Rules:
+- Using your hand / flashlight vagina / pillow in order to fap is not allowed
+- If the fap happened you should end current NoFap by typing "/nofap oopsie". Please be honest with yourself and your bros
+- If someone else fapped you it doesn't consider as a NoFap end. Hint: ask for a BJ next time, cowboy!
+
+Extra resources:
+- https://github.com/NoFap-anon/NoFap_russian-manual/wiki
+- https://www.beloveshkin.com/2014/12/dopamine-1.html?m=1
+- https://www.reddit.com/r/NoFap/comments/phg1r/my_guide_to_successfully_stop_fapping/
+
+The task at hand is rather difficult. Please remember: you are not alone.
+`
     }
 }

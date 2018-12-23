@@ -6,7 +6,7 @@ import {
     noFapStarted, noFapFinished,
     activeNoFap404,noFapCmd404,
     startNoFapDuplicate, noFapReflection,
-    genericError, noFapStats
+    genericError, noFapStats, noFapAbout
 } from './helpers/responses'
 
 import {
@@ -56,6 +56,11 @@ export const nofap = async (event, context, callback) => {
             let stats = await getUserStats(userid)
             callback(null, noFapStats(stats))
             break
+
+        case 'about':
+            callback(null, noFapAbout())
+            break
+
         default:
             callback(null, noFapCmd404())
             break
