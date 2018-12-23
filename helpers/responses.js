@@ -19,12 +19,19 @@ export const noFapStarted = (noFap, comment) => {
     }, comment)
 }
 
-export const noFapFinished = (noFap, comment) => {
-    let days = getNoFapDuration(noFap, comment)
-    return addCommentMaybe({
-        response_type: 'in_channel',
-        text: `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${days} days :clap: :clap:`
-    }, comment)
+export const noFapFinished = (noFap, reflections, comment) => {
+    let days = getNoFapDuration(noFap, comment),
+        text = `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${days} days :clap: :clap:`
+
+    if (reflections.length) {
+        let duration, i; text += "\n\n:pepe-smug: How it happened:"
+        for (i=0; i<reflections.length; i++) {
+            duration = ((reflections[i].timestamp - noFap.start)/(1000*60*60*24)).toFixed(2)
+            text += `\n*Day ${duration}*: ${reflections[i].comment}`
+        }
+    }
+
+    return {response_type: 'in_channel', text}
 }
 
 export const noFapReflection = (noFap, comment) => {

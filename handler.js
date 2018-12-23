@@ -14,7 +14,7 @@ import {
     startNoFapPromise,
     finishNoFapPromise,
     reflectOnNoFapPromise,
-    getUserStats,
+    getUserStats, getNofapReflections
 } from './helpers/dynamodb'
 
 export const nofap = async (event, context, callback) => {
@@ -42,7 +42,7 @@ export const nofap = async (event, context, callback) => {
             if (!existingNoFap) return callback(null, activeNoFap404())
             noFap = await finishNoFapPromise(existingNoFap, comment)
             comment && reflectOnNoFapPromise(noFap, comment)
-            callback(null, noFapFinished(noFap, comment))
+            callback(null, noFapFinished(noFap, await getNofapReflections(noFap.uuid)))
             break
 
         case 'reflect':

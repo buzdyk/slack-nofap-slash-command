@@ -111,3 +111,8 @@ export const reflectOnNoFapPromise = (noFap, comment) => {
         })
     })
 }
+
+export const getNofapReflections = async noFapUuid => {
+    let filter = `#uuid = :uuid`, names  = {'#uuid': 'nofap_uuid'}, values = {':uuid': noFapUuid}
+    return _.orderBy(await scanPromise(reflectionsTable, filter, names, values), ['timestamp'], ['asc'])
+}
