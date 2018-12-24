@@ -41,7 +41,7 @@ export const nofap = async (event, context, callback) => {
         case 'oopsie':
             if (!existingNoFap) return callback(null, activeNoFap404())
             noFap = await finishNoFapPromise(existingNoFap, comment)
-            comment && reflectOnNoFapPromise(noFap, comment)
+            comment && await reflectOnNoFapPromise(noFap, comment)
             callback(null, noFapFinished(noFap, await getNofapReflections(noFap.uuid)))
             break
 
