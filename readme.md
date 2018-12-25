@@ -1,18 +1,14 @@
 # NoFAP™
 
-This is a slash command which helps to track NoFAP periods in your life. Conveniently it is a slash command for Slack!
+This slack slash command helps to track NoFAP periods in your life. More info coming soon!
 
-Usage:
+Setup:
 
-```
-Start NoFAP: /nofap start [optional comment]
-Finish NoFAP: /nofap oopsie [optional comment]
-Reflect on NoFAP: /nofap reflect comment
+1. Follow steps 1-4 from [Serverless Quick Start](https://serverless.com/framework/docs/providers/aws/guide/quick-start/)
+1. Deploy the app via `sls deploy`
 
-Examples:
-/nofap start Today is the day I'll get a life!
-/nofap reflect Damn feels good! :thumbs_up:
-/nofap oopsie
-```
+There are several ways to test while developing:
 
-Hope you enjoy it!
+1. Setup slack app and hook it up to the url provided by `sls deploy`
+1. Post data to the same url via Postman
+1. Test with MochaJS - `npm run mocha`. This is the most convenient approach

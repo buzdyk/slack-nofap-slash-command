@@ -6,8 +6,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "mocha": "mocha-webpack --watch"
+  },
   "dependencies": {
-    "aws-sdk": "^2.377.0",
+    "aws-sdk": "^2.382.0",
     "dateformat": "^3.0.3",
     "lodash": "^4.17.11",
     "uuid": "^3.1.0"
@@ -18,7 +21,9 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
+    "mocha": "^5.2.0",
+    "mocha-webpack": "^2.0.0-beta.0",
     "serverless-webpack": "^5.2.0",
-    "webpack": "^3.3.0"
+    "webpack": "^4.3.0"
   }
 }
