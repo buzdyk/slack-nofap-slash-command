@@ -68,12 +68,20 @@ export const noFapStats = (stats) => {
     }
 }
 
-export const topNoFaps = topNoFaps => {
+export const topNF = stats => {
+    let text = `*Top boys:*`
+
+    text += _.reduce(stats.top, (res, item, index) => {
+        res += `\n*    ${item.streak} days* ${item.participants.join(', ')}`; return res
+    }, '')
+
+    text += `\n\n*Rising stars:*`
+    text += _.reduce(stats.top_reversed, (res, item, index) => {
+        res += `\n*    ${item.streak} days* ${item.participants.join(', ')}`; return res
+    }, '')
+
     return {
-        text: `Top boys:\n` + _.reduce(topNoFaps, (res, noFap) => {
-            return res + `\n*${noFap.username}*: ${getNoFapDuration(noFap)} days`
-        }, ''),
-        response_type: 'in_channel'
+        text, response_type: 'in_channel'
     }
 }
 
@@ -123,7 +131,7 @@ NoFap slash commands:
 - _/nofap reflect comment_ add a comment to your current NoFap history
 - _/nofap oopsie (optional comment)_ - ends your NoFap. Hint: do not start a new NoFap right away. Have some time and think of your motivation
 - _/nofap stats_ - displays your info (privately)
-- _/nofap top_ – displays top 3 heroes
+- _/nofap top_ – displays top participants
 
 Rules:
 - Using your hand / flashlight vagina / pillow in order to fap is not allowed

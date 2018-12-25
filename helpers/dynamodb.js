@@ -53,6 +53,7 @@ export const getUserStats = async userid => {
         durations = _.reduce(noFaps, (res, noFap) => {
             res.push(getNoFapDuration(noFap)); return res
         }, [])
+
     return {
         started_at: firstNoFap.start,
         count: noFaps.length,
@@ -124,4 +125,47 @@ export const getNofapReflections = async noFapUuid => {
 export const getActiveNoFaps = async () => {
     let items = await scanPromise(noFapsTable, `attribute_not_exists(ending)`)
     return _.orderBy(items, ['start'], ['asc'])
+}
+
+export const getNFTop = async () => {
+    let items = await getActiveNoFaps(),
+        res = {top: [], top_reversed: []}
+
+    const getTop = (items, places = 3, threshold = 0.2) => {
+        let top = [], i, duration,
+            place = {streak: 0, participants: []},
+            exceedsThreshold, username
+
+        for (i=0; i<items.length; i++) {
+            duration = getNoFapDuration(items[i])
+            username = items[i].username
+
+            if (place.streak == 0) {
+                place.streak = duration
+                place.participants.push(username)
+            }
+
+            exceedsThreshold = Math.abs(place.streak - duration) > threshold
+
+            if (!exceedsThreshold) {
+                place.participants.indexOf(username) == -1 && place.participants.push(username)
+            }
+
+            if (items[i+1] === undefined || exceedsThreshold) {
+                top.push(Object.assign({}, place))
+                if (top.length == places || items[i+1] === undefined) break
+                place = {streak: duration, participants: [username]}
+            }
+        }
+
+        items.splice(0, i)
+
+        return top
+    }
+
+    res.top = getTop(items)
+    items.reverse()
+    res.top_reversed = getTop(items)
+
+    return res
 }

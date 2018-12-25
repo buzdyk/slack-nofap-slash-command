@@ -6,7 +6,7 @@ import {
     noFapStarted, noFapFinished,
     activeNoFap404,noFapCmd404,
     startNoFapDuplicate, noFapReflection,
-    genericError, noFapStats, noFapAbout, topNoFaps
+    genericError, noFapStats, noFapAbout, topNF
 } from './helpers/responses'
 
 import {
@@ -14,7 +14,8 @@ import {
     startNoFapPromise,
     finishNoFapPromise,
     reflectOnNoFapPromise,
-    getUserStats, getNofapReflections, getActiveNoFaps
+    getUserStats, getNofapReflections, getActiveNoFaps,
+    getNFTop
 } from './helpers/dynamodb'
 
 export const nofap = async (event, context, callback) => {
@@ -58,9 +59,9 @@ export const nofap = async (event, context, callback) => {
             break
 
         case 'top':
-            let activeNofaps = await getActiveNoFaps()
-            callback(null, topNoFaps(activeNofaps.slice(0, 3)))
-            break;
+            let top = await getNFTop()
+            callback(null, topNF(top))
+            break
 
         case 'about':
             callback(null, noFapAbout())
