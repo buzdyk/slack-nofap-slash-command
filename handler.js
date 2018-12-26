@@ -6,7 +6,8 @@ import {
     noFapStarted, noFapFinished,
     activeNoFap404,noFapCmd404,
     startNoFapDuplicate, noFapReflection,
-    genericError, noFapStats, noFapAbout, topNF
+    genericError, noFapStats, noFapAbout, topNF,
+    noFapStatsNew, showNF
 } from './helpers/responses'
 
 import NFService from './db/nofap-service'
@@ -22,7 +23,7 @@ export const nofap = async (event, context, callback) => {
         userid = data.user_id,
         username = data.user_name,
         existingNF = await nfService.getActiveByUserid(userid),
-        nf
+        nf, nfs
 
     if (text.indexOf(' ') == -1) text = `${text} `
 
@@ -52,8 +53,18 @@ export const nofap = async (event, context, callback) => {
             break
 
         case 'stats':
-            let stats1 = await nfService.getUserStats(userid)
-            callback(null, noFapStats(stats1))
+            let stats = await nfService.getUserStats(userid)
+            nfs = await nfService.getByUserid(userid)
+            callback(null, noFapStatsNew(stats, nfs))
+            break
+
+        case 'show':
+            nfs = await nfService.getByUserid(userid)
+            nf = _.find(nfs, {uuid: comment})
+
+            if (!nf) return callback(null, genericError('Sorry, NoFap is not found!'))
+
+            callback(null, showNF(nf, await reflectionService.getReflectionsByNFUuid(nf.uuid)))
             break
 
         case 'top':

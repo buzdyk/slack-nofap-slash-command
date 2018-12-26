@@ -1,3 +1,5 @@
+import dateformat from 'dateformat'
+
 export const getNoFapDuration = noFap => {
     if (!noFap) return 0
 
@@ -19,3 +21,5 @@ export const getSlackRankByDuration = duration => {
 
     return ':kolobok-sir:'
 }
+
+export const tsToDate = ts => dateformat(new Date(ts), 'mmmm dS, yyyy')

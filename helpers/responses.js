@@ -1,5 +1,5 @@
-import dateformat from 'dateformat'
-import {getSlackRankByDuration} from './utils'
+import {getSlackRankByDuration, tsToDate} from './utils'
+import * as _ from 'lodash'
 
 // todo use function from utils
 const getNoFapDuration = noFap => {
@@ -44,7 +44,7 @@ export const noFapReflection = (noFap, comment) => {
 }
 
 export const noFapStats = (stats) => {
-    let startedFormatted = stats.started_at ? dateformat(new Date(stats.started_at), 'mmmm dS, yyyy') : '–'
+    let startedFormatted = stats.started_at ? tsToDate(stats.started_at) : '–'
 
     if (stats.count == 0) {
         return {text: 'In order to see the stats you need to start your first NoFap by typing "/nofap start". Good luck!'}
@@ -68,6 +68,41 @@ export const noFapStats = (stats) => {
     }
 }
 
+export const noFapStatsNew = (stats, nfs) => {
+    let startedFormatted = stats.started_at ? tsToDate(stats.started_at): '–',
+        text = `Your NoFap stats :information_desk_person:`
+
+    if (stats.count == 0) {
+        return {text: 'In order to see the stats you need to start your first NoFap by typing "/nofap start". Good luck!'}
+    }
+
+    text += _.reduce(nfs, (res, nf, i) => {
+        let overview = `\n\n${i+1}. Started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getNoFapDuration(nf)}*` : `*goes on!*`),
+            id = `\n     ID: ${nf.uuid}`
+
+        return res + overview + id
+    }, '')
+
+    text += `\n\nType _/nofap show ID_ to see reflections you experienced back then`
+
+    let attachments = [{
+        fields: [
+            {title: `First NoFap`, value: `${startedFormatted}`, short: true},
+            {title: `Count`, value: stats.count, short: true},
+            {title: `Total`, value: `${stats.total_days} days`, short: true},
+            {title: `Avg`, value: `${stats.avg_days} days`, short: true},
+            {title: `Current`, value: `${stats.current_days} days`, short: true},
+            {title: `Rank`, value: getSlackRankByDuration(stats.total_days), short: true}
+        ]
+    }]
+
+    return {
+        text,
+        attachments,
+        response_type: 'ephemeral',
+    }
+}
+
 export const topNF = stats => {
     let text = `*Top boys:*`
 
@@ -82,6 +117,21 @@ export const topNF = stats => {
 
     return {
         text, response_type: 'in_channel'
+    }
+}
+
+export const showNF = (nf, reflections) => {
+    let text = `Started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getNoFapDuration(nf)}*` : `*goes on!*`)
+
+    if (reflections.length) text += "\n"
+
+    text += _.reduce(reflections, (res, reflection) => {
+        let duration = ((reflection.timestamp - nf.start)/(1000*60*60*24)).toFixed(2)
+        return res + `\n*Day ${duration}*: ${reflection.comment}`
+    }, '')
+
+    return {
+        text, response_type: 'ephemeral'
     }
 }
 

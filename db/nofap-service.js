@@ -48,6 +48,16 @@ export default class NofapService {
         return items.length ? items[0] : null
     }
 
+    async getByUserid(userid) {
+        let items = await this.db.scanPromise(
+            this.table,
+            `userid = :userid`,
+            {':userid': userid}
+        )
+
+        return items.length ? _.orderBy(items, ['start'], ['asc']) : null
+    }
+
     async getTop() {
         let items = await this.getActive(),
             res = {top: [], top_reversed: []}
