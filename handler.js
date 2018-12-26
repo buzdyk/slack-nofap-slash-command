@@ -9,58 +9,56 @@ import {
     genericError, noFapStats, noFapAbout, topNF
 } from './helpers/responses'
 
-import {
-    findActiveNoFapPromise,
-    startNoFapPromise,
-    finishNoFapPromise,
-    reflectOnNoFapPromise,
-    getUserStats, getNofapReflections, getActiveNoFaps,
-    getNFTop
-} from './helpers/dynamodb'
+import NFService from './db/nofap-service'
+import ReflectionService from './db/reflection-service'
+import * as db from './db/dynamo'
+
+let nfService = new NFService(db)
+let reflectionService = new ReflectionService(db)
 
 export const nofap = async (event, context, callback) => {
     let data = event.body,
         text = data.text.trim(),
         userid = data.user_id,
         username = data.user_name,
-        existingNoFap = await findActiveNoFapPromise(userid)
+        existingNF = await nfService.getActiveByUserid(userid),
+        nf
 
     if (text.indexOf(' ') == -1) text = `${text} `
 
     let command = text.substr(0, text.indexOf(' ')),
-        comment = text.substr(text.indexOf(' ') + 1),
-        noFap
+        comment = text.substr(text.indexOf(' ') + 1)
 
     switch (command) {
         case 'start':
-            if (existingNoFap) return callback(null, startNoFapDuplicate(existingNoFap))
-            noFap = await startNoFapPromise(userid, username)
-            comment && reflectOnNoFapPromise(noFap, comment)
-            callback(null, noFapStarted(noFap, comment))
+            if (existingNF) return callback(null, startNoFapDuplicate(existingNF))
+            nf = await nfService.start(userid, username)
+            comment && await reflectionService.reflectOnNF(nf.uuid, comment)
+            callback(null, noFapStarted(nf, comment))
             break
 
         case 'oopsie':
-            if (!existingNoFap) return callback(null, activeNoFap404())
-            noFap = await finishNoFapPromise(existingNoFap, comment)
-            comment && await reflectOnNoFapPromise(noFap, comment)
-            callback(null, noFapFinished(noFap, await getNofapReflections(noFap.uuid)))
+            if (!existingNF) return callback(null, activeNoFap404())
+            nf = await nfService.finish(existingNF, comment)
+            comment && await reflectionService.reflectOnNF(nf.uuid, comment)
+            callback(null, noFapFinished(nf, await reflectionService.getReflectionsByNFUuid(nf.uuid)))
             break
 
         case 'reflect':
-            if (!existingNoFap) return callback(null, activeNoFap404())
-            if (!comment)       return callback(null, genericError('You reflected silently'))
-            reflectOnNoFapPromise(existingNoFap, comment)
-            callback(null, noFapReflection(existingNoFap, comment))
+            if (!existingNF) return callback(null, activeNoFap404())
+            if (!comment)    return callback(null, genericError('You reflected silently'))
+            reflectionService.reflectOnNF(existingNF.uuid, comment)
+            callback(null, noFapReflection(existingNF, comment))
             break
 
         case 'stats':
-            let stats = await getUserStats(userid)
-            callback(null, noFapStats(stats))
+            let stats1 = await nfService.getUserStats(userid)
+            callback(null, noFapStats(stats1))
             break
 
         case 'top':
-            let top = await getNFTop()
-            callback(null, topNF(top))
+            let top1 = await nfService.getTop()
+            callback(null, topNF(top1))
             break
 
         case 'about':

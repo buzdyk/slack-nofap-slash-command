@@ -2,7 +2,7 @@ import {getPeriodDuration} from './../helpers/utils'
 import * as _ from 'lodash'
 import * as uuid from 'uuid'
 
-class NofapService {
+export default class NofapService {
 
     constructor(db) {
         this.db = db
@@ -39,11 +39,13 @@ class NofapService {
     }
 
     async getActiveByUserid(userid) {
-        return await this.db.scanPromise(
+        let items = await this.db.scanPromise(
             this.table,
             `attribute_not_exists(ending) and userid = :userid`,
             {':userid': userid}
         )
+
+        return items.length ? items[0] : null
     }
 
     async getTop() {
@@ -107,7 +109,7 @@ class NofapService {
             count: nfs.length,
             total_days: _.sum(durations).toFixed(2),
             avg_days:   (_.sum(durations)/nfs.length).toFixed(2),
-            current_days: getPeriodDuration(activeNF.start, activeNF.ending)
+            current_days: activeNF ? getPeriodDuration(activeNF.start, activeNF.ending) : 0
         }
     }
 }

@@ -1,10 +1,10 @@
 import { DynamoDB } from 'aws-sdk'
 const dynamoDb = new DynamoDB.DocumentClient()
 import * as uuid from 'uuid'
-import {getNoFapDuration} from './utils'
+import {getNoFapDuration} from './../helpers/utils'
 import * as _ from 'lodash'
 
-const scanPromise = (TableName, FilterExpression, ExpressionAttributeValues = null, ExpressionAttributeNames = null) => {
+export const scanPromise = (TableName, FilterExpression, ExpressionAttributeValues = null, ExpressionAttributeNames = null) => {
     return new Promise((resolve, reject) => {
         let handler = (err, data) => err ? reject(err) : resolve(data.Items),
             params = {TableName, FilterExpression}
@@ -16,7 +16,7 @@ const scanPromise = (TableName, FilterExpression, ExpressionAttributeValues = nu
     })
 }
 
-const putPromise = (TableName, Item) => {
+export const putPromise = (TableName, Item) => {
     return new Promise((resolve, reject) => {
         dynamoDb.put({TableName, Item}, (err, data) => {
             if (err) reject(err)
@@ -27,7 +27,7 @@ const putPromise = (TableName, Item) => {
     })
 }
 
-const updatePromise = (TableName, Key, UpdateExpression, ExpressionAttributeValues) => {
+export const updatePromise = (TableName, Key, UpdateExpression, ExpressionAttributeValues) => {
     return new Promise((resolve, reject) => {
         dynamoDb.update({
             TableName, Key,

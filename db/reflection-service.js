@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import * as uuid from 'uuid'
 
-class ReflectionService {
+export default class ReflectionService {
 
     constructor(db) {
         this.db = db
