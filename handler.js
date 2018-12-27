@@ -4,9 +4,9 @@ if (!global._babelPolyfill) {
 
 import {
     noFapStarted, noFapFinished,
-    activeNoFap404,noFapCmd404,
+    activeNoFap404, noFapCmd404,
     startNoFapDuplicate, noFapReflection,
-    genericError, noFapStats, noFapAbout, topNF
+    genericError, noFapStats, noFapAbout, topNF, participantsList
 } from './helpers/responses'
 
 import NFService from './db/nofap-service'
@@ -59,6 +59,10 @@ export const nofap = async (event, context, callback) => {
         case 'top':
             let top1 = await nfService.getTop()
             callback(null, topNF(top1))
+            break
+
+        case 'participants':
+            callback(null, participantsList(nfService.getList()))
             break
 
         case 'about':
