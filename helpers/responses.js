@@ -1,5 +1,5 @@
 import dateformat from 'dateformat'
-import {getSlackRankByDuration} from './utils'
+import {getPeriodDuration, getSlackRankByDuration} from './utils'
 
 // todo use function from utils
 const getNoFapDuration = noFap => {
@@ -85,6 +85,17 @@ export const topNF = stats => {
     }
 }
 
+export const participantsList = users => {
+    const text = `
+        *All boys*\n
+        ${users.map(user => `${user.userId}: ${getPeriodDuration(user.start, user.ending)}\n`)}
+    `;
+    return {
+        response_type: "in_channel",
+        text
+    }
+}
+
 export const activeNoFap404 = () => {
     return {
         response_type: 'ephemeral',
@@ -132,6 +143,7 @@ NoFap slash commands:
 - _/nofap oopsie (optional comment)_ - ends your NoFap. Hint: do not start a new NoFap right away. Have some time and think of your motivation
 - _/nofap stats_ - displays your info (privately)
 - _/nofap top_ – displays top participants
+- _/nofap participants_ – displays all participants
 
 Rules:
 - Using your hand / flashlight vagina / pillow in order to fap is not allowed

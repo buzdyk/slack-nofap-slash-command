@@ -48,6 +48,10 @@ export default class NofapService {
         return items.length ? items[0] : null
     }
 
+    async getList() {
+        return await this.getActive().sort(i => i.start)
+    }
+
     async getTop() {
         let items = await this.getActive(),
             res = {top: [], top_reversed: []}
