@@ -1,4 +1,4 @@
-import {getSlackRankByDuration, tsToDate} from './utils'
+import {getSlackRankByDuration, tsToDate, getPeriodDuration} from './utils'
 import * as _ from 'lodash'
 
 // todo use function from utils
@@ -21,7 +21,7 @@ export const noFapStarted = (noFap, comment) => {
 }
 
 export const noFapFinished = (noFap, reflections) => {
-    let days = getNoFapDuration(noFap),
+    let days = getPeriodDuration(noFap.start, noFap.ending),
         text = `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${days} days :clap: :clap:`
 
     if (reflections.length) {
@@ -36,39 +36,15 @@ export const noFapFinished = (noFap, reflections) => {
 }
 
 export const noFapReflection = (noFap, comment) => {
-    let days = getNoFapDuration(noFap)
+    let days = getPeriodDuration(noFap.start, noFap.ending)
+
     return addCommentMaybe({
         response_type: 'in_channel',
         text: `:thinking_face: It\'s been ${days} days of ${noFap.username} NoFap"`
     }, comment)
 }
 
-export const noFapStats = (stats) => {
-    let startedFormatted = stats.started_at ? tsToDate(stats.started_at) : '–'
-
-    if (stats.count == 0) {
-        return {text: 'In order to see the stats you need to start your first NoFap by typing "/nofap start". Good luck!'}
-    }
-
-    let attachments = [{
-        fields: [
-            {title: `First NoFap`, value: `${startedFormatted}`, short: true},
-            {title: `Count`, value: stats.count, short: true},
-            {title: `Total`, value: `${stats.total_days} days`, short: true},
-            {title: `Avg`, value: `${stats.avg_days} days`, short: true},
-            {title: `Current`, value: `${stats.current_days} days`, short: true},
-            {title: `Rank`, value: getSlackRankByDuration(stats.total_days), short: true}
-        ]
-    }]
-
-    return {
-        text: `Your NoFap stats :information_desk_person:`,
-        attachments,
-        response_type: 'ephemeral',
-    }
-}
-
-export const noFapStatsNew = (stats, nfs) => {
+export const noFapStats = (stats, nfs) => {
     let startedFormatted = stats.started_at ? tsToDate(stats.started_at): '–',
         text = `Your NoFap stats :information_desk_person:`
 
@@ -77,7 +53,7 @@ export const noFapStatsNew = (stats, nfs) => {
     }
 
     text += _.reduce(nfs, (res, nf, i) => {
-        let overview = `\n\n${i+1}. Started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getNoFapDuration(nf)}*` : `*goes on!*`),
+        let overview = `\n\n${i+1}. Started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getPeriodDuration(nf.start, nf.ending)}*` : `*goes on!*`),
             id = `\n     ID: ${nf.uuid}`
 
         return res + overview + id
@@ -92,7 +68,7 @@ export const noFapStatsNew = (stats, nfs) => {
             {title: `Total`, value: `${stats.total_days} days`, short: true},
             {title: `Avg`, value: `${stats.avg_days} days`, short: true},
             {title: `Current`, value: `${stats.current_days} days`, short: true},
-            {title: `Rank`, value: getSlackRankByDuration(stats.total_days), short: true}
+            {title: `Rank`, value: getSlackRankByDuration(parseFloat(stats.total_days)), short: true}
         ]
     }]
 
@@ -121,7 +97,7 @@ export const topNF = stats => {
 }
 
 export const showNF = (nf, reflections) => {
-    let text = `Started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getNoFapDuration(nf)}*` : `*goes on!*`)
+    let text = `Requested NoFap started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getPeriodDuration(nf.start, nf.ending)}*` : `*goes on!*`)
 
     if (reflections.length) text += "\n"
 
@@ -150,7 +126,7 @@ export const noFapCmd404 = () => {
 }
 
 export const startNoFapDuplicate = (noFap) => {
-    let days = getNoFapDuration(noFap)
+    let days = getPeriodDuration(noFap.start, noFap.ending)
 
     return {
         response_type: 'ephemeral',

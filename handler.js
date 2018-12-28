@@ -7,12 +7,14 @@ import {
     activeNoFap404,noFapCmd404,
     startNoFapDuplicate, noFapReflection,
     genericError, noFapStats, noFapAbout, topNF,
-    noFapStatsNew, showNF
+    showNF
 } from './helpers/responses'
 
 import NFService from './db/nofap-service'
 import ReflectionService from './db/reflection-service'
 import * as db from './db/dynamo'
+
+const axios = require('axios')
 
 let nfService = new NFService(db)
 let reflectionService = new ReflectionService(db)
@@ -55,14 +57,14 @@ export const nofap = async (event, context, callback) => {
         case 'stats':
             let stats = await nfService.getUserStats(userid)
             nfs = await nfService.getByUserid(userid)
-            callback(null, noFapStatsNew(stats, nfs))
+            callback(null, noFapStats(stats, nfs))
             break
 
         case 'show':
             nfs = await nfService.getByUserid(userid)
             nf = _.find(nfs, {uuid: comment})
 
-            if (!nf) return callback(null, genericError('Sorry, NoFap is not found!'))
+            if (!nf) return callback(null, genericError('Sorry, requested NoFap is not found!'))
 
             callback(null, showNF(nf, await reflectionService.getReflectionsByNFUuid(nf.uuid)))
             break
@@ -75,7 +77,7 @@ export const nofap = async (event, context, callback) => {
         case 'about':
             callback(null, noFapAbout())
             break
-
+        
         default:
             callback(null, noFapCmd404())
             break
