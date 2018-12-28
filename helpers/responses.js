@@ -1,11 +1,6 @@
 import {getSlackRankByDuration, tsToDate, getPeriodDuration} from './utils'
 import * as _ from 'lodash'
-
-// todo use function from utils
-const getNoFapDuration = noFap => {
-    let diff = new Date().getTime() - noFap.start
-    return (diff/(1000*60*60*24)).toFixed(2)
-}
+import dateformat from 'dateformat'
 
 const addCommentMaybe = (message, comment) => {
     if (comment) message.attachments = [{text: comment}]
@@ -111,6 +106,16 @@ export const showNF = (nf, reflections) => {
     }
 }
 
+export const participantsList = nfs => {
+    if (nfs.length == 0) return {response_type: 'ephemeral', text: 'Sadly there is no participants in NoFap'}
+
+    const text = `*All boys:*${nfs.reduce((res, nf) => res + `\n    ${nf.username}: ${getPeriodDuration(nf.start, nf.ending)}`, '')}`
+
+    return {
+        response_type: 'ephemeral', text
+    }
+}
+
 export const activeNoFap404 = () => {
     return {
         response_type: 'ephemeral',
@@ -158,6 +163,7 @@ NoFap slash commands:
 - _/nofap oopsie (optional comment)_ - ends your NoFap. Hint: do not start a new NoFap right away. Have some time and think of your motivation
 - _/nofap stats_ - displays your info (privately)
 - _/nofap top_ – displays top participants
+- _/nofap participants_ – displays all participants
 
 Rules:
 - Using your hand / flashlight vagina / pillow in order to fap is not allowed

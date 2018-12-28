@@ -1,7 +1,6 @@
 import { DynamoDB } from 'aws-sdk'
 const dynamoDb = new DynamoDB.DocumentClient()
 import * as uuid from 'uuid'
-import {getNoFapDuration} from './../helpers/utils'
 import * as _ from 'lodash'
 
 export const scanPromise = (TableName, FilterExpression, ExpressionAttributeValues = null, ExpressionAttributeNames = null) => {
