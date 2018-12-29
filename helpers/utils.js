@@ -15,7 +15,7 @@ export const getSlackRankByDuration = duration => {
     return ':kolobok-sir:'
 }
 
-export const humanDuration = duration => {
+export const humanizeDuration = duration => {
     const _pluralize = (value, string) => {
         if (value === 1) return `${value} ${string}`
         else return `${value} ${string}s`
