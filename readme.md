@@ -1,4 +1,4 @@
-# NoFAP™
+# NoFAP
 
 This slack slash command helps to track NoFAP periods in your life. More info coming soon!
 
