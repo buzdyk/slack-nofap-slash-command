@@ -15,17 +15,15 @@ export const getSlackRankByDuration = duration => {
     return ':kolobok-sir:'
 }
 
-export const humanizeDuration = duration => {
+export const humanizeDuration = days => {
     const _pluralize = (value, string) => {
         if (value === 1) return `${value} ${string}`
         else return `${value} ${string}s`
     }
 
-    if (!duration || Number.isNaN(duration) || Number(duration) !== duration) return ''
+    if (!days || Number.isNaN(days) || Number(days) !== days || days <= 0) return ''
 
-    if (!Number.isInteger(duration)) { // float passed, e.g. 5.7 days
-        duration = duration * 24 * 60 * 60 * 1000
-    }
+    const duration = days * 24 * 60 * 60 * 1000
 
     if (duration < 1000 * 60) {
         return _pluralize(Math.ceil(duration / 1000), 'second')

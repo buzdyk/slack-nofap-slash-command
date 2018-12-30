@@ -1,6 +1,6 @@
 var assert = require('assert')
 
-import {getSlackRankByDuration} from './../helpers/utils'
+import {getSlackRankByDuration, humanizeDuration} from './../helpers/utils'
 
 describe('Ranks', () => {
     const assertRank = (durations, correctRank) => {
@@ -27,5 +27,24 @@ describe('Ranks', () => {
 
     it('[30; infinity) returns sir', () => {
         assertRank([30, 31, 5001], ':kolobok-sir:')
+    })
+})
+
+describe('humanizeDuration function', () => {
+    it('correctly parse argument > 1', () => {
+        assert.equal(humanizeDuration(2.5), '2 days and 12 hours')
+        assert.equal(humanizeDuration(3.0), '3 days')
+        assert.equal(humanizeDuration(3.14), '3 days and 3 hours')
+    })
+
+    it('correctly parse argument < 1', () => {
+        assert.equal(humanizeDuration(0.5), '12 hours')
+        assert.equal(humanizeDuration(0.01), '14 minutes')
+    })
+
+    it('returns empty string for invalid arguments', () => {
+        assert.equal(humanizeDuration('test test'), '')
+        assert.equal(humanizeDuration(-35), '')
+        assert.equal(humanizeDuration(), '')
     })
 })
