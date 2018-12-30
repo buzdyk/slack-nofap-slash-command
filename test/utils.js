@@ -18,7 +18,6 @@ describe('Ranks', () => {
 
     it('[1; 8) returns perekat', () => {
         assertRank([1, 2, 7.99], ':kolobok-perekat:')
-        let emoji = ':kolobok-perekat:'
     })
 
     it('[8; 30) returns nya', () => {

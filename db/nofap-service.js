@@ -71,7 +71,7 @@ export default class NofapService {
                 duration = getPeriodDuration(items[i].start, items[i].ending)
                 username = items[i].username
 
-                if (place.streak == 0) {
+                if (place.streak === 0) {
                     place.streak = duration
                     place.participants.push(username)
                 }
@@ -79,12 +79,12 @@ export default class NofapService {
                 exceedsThreshold = Math.abs(place.streak - duration) > threshold
 
                 if (!exceedsThreshold) {
-                    place.participants.indexOf(username) == -1 && place.participants.push(username)
+                    place.participants.indexOf(username) === -1 && place.participants.push(username)
                 }
 
                 if (items[i+1] === undefined || exceedsThreshold) {
                     top.push(Object.assign({}, place))
-                    if (top.length == places || items[i+1] === undefined) break
+                    if (top.length === places || items[i+1] === undefined) break
                     place = {streak: duration, participants: [username]}
                 }
             }

@@ -43,7 +43,7 @@ export const noFapStats = (stats, nfs) => {
     let startedFormatted = stats.started_at ? tsToDate(stats.started_at): '–',
         text = `Your NoFap stats :information_desk_person:`
 
-    if (stats.count == 0) {
+    if (stats.count === 0) {
         return {text: 'In order to see the stats you need to start your first NoFap by typing "/nofap start". Good luck!'}
     }
 
@@ -107,7 +107,7 @@ export const showNF = (nf, reflections) => {
 }
 
 export const participantsList = nfs => {
-    if (nfs.length == 0) return {response_type: 'ephemeral', text: 'Sadly there is no participants in NoFap'}
+    if (nfs.length === 0) return {response_type: 'ephemeral', text: 'Sadly there is no participants in NoFap'}
 
     const text = `*All boys:*${nfs.reduce((res, nf, i) => res + `\n    ${i+1}. ${nf.username}: ${humanizeDuration(getPeriodDuration(nf.start, nf.ending))}`, '')}`
 
