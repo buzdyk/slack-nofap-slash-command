@@ -1,4 +1,4 @@
-import {getSlackRankByDuration, tsToDate, getPeriodDuration} from './utils'
+import {getSlackRankByDuration, tsToDate, getPeriodDuration, humanizeDuration} from './utils'
 import * as _ from 'lodash'
 import dateformat from 'dateformat'
 
@@ -17,7 +17,7 @@ export const noFapStarted = (noFap, comment) => {
 
 export const noFapFinished = (noFap, reflections) => {
     let days = getPeriodDuration(noFap.start, noFap.ending),
-        text = `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${days} days :clap: :clap:`
+        text = `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${humanizeDuration(days)} :clap: :clap:`
 
     if (reflections.length) {
         let duration, i; text += "\n\n:pepe-smug: How it happened:"
@@ -35,7 +35,7 @@ export const noFapReflection = (noFap, comment) => {
 
     return addCommentMaybe({
         response_type: 'in_channel',
-        text: `:thinking_face: It\'s been ${days} days of ${noFap.username} NoFap"`
+        text: `:thinking_face: It\'s been ${humanizeDuration(days)} of ${noFap.username} NoFap"`
     }, comment)
 }
 
@@ -43,12 +43,12 @@ export const noFapStats = (stats, nfs) => {
     let startedFormatted = stats.started_at ? tsToDate(stats.started_at): '–',
         text = `Your NoFap stats :information_desk_person:`
 
-    if (stats.count == 0) {
+    if (stats.count === 0) {
         return {text: 'In order to see the stats you need to start your first NoFap by typing "/nofap start". Good luck!'}
     }
 
     text += _.reduce(nfs, (res, nf, i) => {
-        let overview = `\n\n${i+1}. Started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getPeriodDuration(nf.start, nf.ending)}*` : `*goes on!*`),
+        let overview = `\n\n${i+1}. Started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${humanizeDuration(getPeriodDuration(nf.start, nf.ending))}*` : `*goes on!*`),
             id = `\n     ID: ${nf.uuid}`
 
         return res + overview + id
@@ -92,7 +92,7 @@ export const topNF = stats => {
 }
 
 export const showNF = (nf, reflections) => {
-    let text = `Requested NoFap started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${getPeriodDuration(nf.start, nf.ending)}*` : `*goes on!*`)
+    let text = `Requested NoFap started on ${tsToDate(nf.start)} and ` + (nf.ending ? `lasted *${humanizeDuration(getPeriodDuration(nf.start, nf.ending))}*` : `*goes on!*`)
 
     if (reflections.length) text += "\n"
 
@@ -107,9 +107,9 @@ export const showNF = (nf, reflections) => {
 }
 
 export const participantsList = nfs => {
-    if (nfs.length == 0) return {response_type: 'ephemeral', text: 'Sadly there is no participants in NoFap'}
+    if (nfs.length === 0) return {response_type: 'ephemeral', text: 'Sadly there is no participants in NoFap'}
 
-    const text = `*All boys:*${nfs.reduce((res, nf, i) => res + `\n    ${i+1}. ${nf.username}: ${getPeriodDuration(nf.start, nf.ending)}`, '')}`
+    const text = `*All boys:*${nfs.reduce((res, nf, i) => res + `\n    ${i+1}. ${nf.username}: ${humanizeDuration(getPeriodDuration(nf.start, nf.ending))}`, '')}`
 
     return {
         response_type: 'ephemeral', text
@@ -135,7 +135,7 @@ export const startNoFapDuplicate = (noFap) => {
 
     return {
         response_type: 'ephemeral',
-        text: `:robot_face: You are already on the journey - ${days} days so far`
+        text: `:robot_face: You are already on the journey - ${humanizeDuration(days)} so far`
     }
 }
 
