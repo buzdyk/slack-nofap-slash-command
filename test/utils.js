@@ -1,6 +1,6 @@
 var assert = require('assert')
 
-import {getSlackRankByDuration, humanizeDuration, parsePostBody} from './../helpers/utils'
+import {getSlackRankByDuration, humanizeDuration, parsePostBody} from './../src/utils'
 
 describe('Ranks', () => {
     const assertRank = (durations, correctRank) => {

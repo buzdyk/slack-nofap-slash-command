@@ -1,7 +1,7 @@
 import NFService from './db/nofap-service'
 import ReflectionService from './db/reflection-service'
 import * as db from './db/dynamo'
-import * as msgs from './helpers/responses'
+import * as msgs from './responses'
 
 export default class Commander
 {

@@ -1,7 +1,8 @@
 import { DynamoDB } from 'aws-sdk'
-const dynamoDb = new DynamoDB.DocumentClient()
 import * as uuid from 'uuid'
 import * as _ from 'lodash'
+
+const dynamoDb = new DynamoDB.DocumentClient()
 
 export const scanPromise = (TableName, FilterExpression, ExpressionAttributeValues = null, ExpressionAttributeNames = null) => {
     return new Promise((resolve, reject) => {

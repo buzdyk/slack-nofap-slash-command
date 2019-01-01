@@ -1,6 +1,6 @@
 var assert = require('assert')
 
-import * as dynamo from './../db/dynamo'
+import * as dynamo from './../src/db/dynamo'
 
 describe('Dynamo', () => {
     it('Has scanPromise', () => {

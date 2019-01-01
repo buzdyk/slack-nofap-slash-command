@@ -1,6 +1,6 @@
-import {parsePostBody} from './helpers/utils'
-import * as db from './db/dynamo'
-import Commander from './commander'
+import {parsePostBody} from './src/utils'
+import * as db from './src/db/dynamo'
+import Commander from './src/commander'
 import axios from 'axios'
 
 let commander = new Commander(db)

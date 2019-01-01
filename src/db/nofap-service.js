@@ -1,4 +1,4 @@
-import {getPeriodDuration} from './../helpers/utils'
+import {getPeriodDuration} from './../utils'
 import * as _ from 'lodash'
 import * as uuid from 'uuid'
 
