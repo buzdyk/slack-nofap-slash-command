@@ -1,6 +1,6 @@
 var assert = require('assert')
 
-import {getSlackRankByDuration, humanizeDuration} from './../helpers/utils'
+import {getSlackRankByDuration, humanizeDuration, parsePostBody} from './../helpers/utils'
 
 describe('Ranks', () => {
     const assertRank = (durations, correctRank) => {
@@ -45,5 +45,22 @@ describe('humanizeDuration function', () => {
         assert.equal(humanizeDuration('test test'), '')
         assert.equal(humanizeDuration(-35), '')
         assert.equal(humanizeDuration(), '')
+    })
+})
+
+describe('parsePostBody function', () => {
+    it('parses slack slash command body', () => {
+        let postBody = 'token=tokenValue&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands',
+            parsedBody = parsePostBody(postBody)
+
+        assert.equal(parsedBody.token, 'tokenValue')
+        assert.equal(parsedBody.response_url, 'https://hooks.slack.com/commands')
+    })
+
+    it('replaces + with spaces', () => {
+        let postBody = 'text=one+two plus three',
+            parsedBody = parsePostBody(postBody)
+
+        assert.equal(parsedBody.text, 'one two plus three')
     })
 })

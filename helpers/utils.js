@@ -1,4 +1,5 @@
 import dateformat from 'dateformat'
+import axios from 'axios'
 
 export const getPeriodDuration = (start, end) => {
     if (!start) return 0
@@ -41,3 +42,16 @@ export const humanizeDuration = days => {
 }
 
 export const tsToDate = ts => dateformat(new Date(ts), 'mmmm dS, yyyy')
+
+// as of now this function assumes params are not arrays and have values
+export const parsePostBody = body => {
+    return body.split('&').reduce((res, param) => {
+        let parts = param.split('=')
+        res[parts[0]] = decodeURIComponent(parts[1]).replace(/\+/g, ' ')
+        return res
+    }, {})
+}
+
+export const post = (url, payload) => {
+    return axios.post(url, payload)
+}

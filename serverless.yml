@@ -24,7 +24,7 @@ functions:
        - http:
            path: /
            method: post
-           integration: LAMBDA
+           integration: lambda-proxy
 resources:
   Resources:
     nofapsTable:
@@ -49,8 +49,7 @@ resources:
           - AttributeName: uuid
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: uuid
+          - AttributeName: uuid
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 2

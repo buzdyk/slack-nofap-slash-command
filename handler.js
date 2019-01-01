@@ -1,7 +1,8 @@
 if (!global._babelPolyfill) {
-    require('babel-polyfill');
+    require('babel-polyfill')
 }
 
+import {parsePostBody, post} from './helpers/utils'
 import {
     noFapStarted, noFapFinished,
     activeNoFap404, noFapCmd404,
@@ -14,18 +15,17 @@ import NFService from './db/nofap-service'
 import ReflectionService from './db/reflection-service'
 import * as db from './db/dynamo'
 
-const axios = require('axios')
-
 let nfService = new NFService(db)
 let reflectionService = new ReflectionService(db)
 
 export const nofap = async (event, context, callback) => {
-    let data = event.body,
+    let data = parsePostBody(event.body),
+        respond = (response) => post(data.response_url, response),
         text = data.text.trim(),
         userid = data.user_id,
         username = data.user_name,
         existingNF = await nfService.getActiveByUserid(userid),
-        nf, nfs
+        nf, nfs, reflections
 
     if (text.indexOf(' ') == -1) text = `${text} `
 
@@ -34,56 +34,68 @@ export const nofap = async (event, context, callback) => {
 
     switch (command) {
         case 'start':
-            if (existingNF) return callback(null, startNoFapDuplicate(existingNF))
+            if (existingNF) { respond(startNoFapDuplicate(existingNF)); break }
             nf = await nfService.start(userid, username)
             comment && await reflectionService.reflectOnNF(nf.uuid, comment)
-            callback(null, noFapStarted(nf, comment))
+            respond(noFapStarted(nf, comment))
             break
 
         case 'oopsie':
-            if (!existingNF) return callback(null, activeNoFap404())
+            if (!existingNF) { respond(activeNoFap404()); break }
             nf = await nfService.finish(existingNF, comment)
             comment && await reflectionService.reflectOnNF(nf.uuid, comment)
-            callback(null, noFapFinished(nf, await reflectionService.getReflectionsByNFUuid(nf.uuid)))
+            reflections = await reflectionService.getReflectionsByNFUuid(nf.uuid)
+            respond(noFapFinished(nf, reflections))
             break
 
         case 'reflect':
-            if (!existingNF) return callback(null, activeNoFap404())
-            if (!comment)    return callback(null, genericError('You reflected silently'))
+            console.log(existingNF, comment)
+            if (!existingNF) { respond(activeNoFap404()); break }
+            if (!comment)    { respond(genericError('You reflected silently')); break }
             reflectionService.reflectOnNF(existingNF.uuid, comment)
-            callback(null, noFapReflection(existingNF, comment))
+            respond(noFapReflection(existingNF, comment))
             break
 
         case 'stats':
             let stats = await nfService.getUserStats(userid)
             nfs = await nfService.getByUserid(userid)
-            callback(null, noFapStats(stats, nfs))
+            respond(noFapStats(stats, nfs))
             break
 
         case 'show':
             nfs = await nfService.getByUserid(userid)
             nf = _.find(nfs, {uuid: comment})
 
-            if (!nf) return callback(null, genericError('Sorry, requested NoFap is not found!'))
+            if (!nf) { respond(genericError('Sorry, requested NoFap is not found!')); break }
 
-            callback(null, showNF(nf, await reflectionService.getReflectionsByNFUuid(nf.uuid)))
+            reflections = await reflectionService.getReflectionsByNFUuid(nf.uuid)
+            respond(showNF(nf, reflections))
             break
 
         case 'top':
             let top = await nfService.getTop()
-            callback(null, topNF(top))
+            respond(topNF(top))
             break
 
         case 'participants':
-            callback(null, participantsList(await nfService.getActive()))
+            respond(participantsList(await nfService.getActive()))
             break
 
         case 'about':
-            callback(null, noFapAbout())
+            respond(noFapAbout())
             break
-        
+
         default:
-            callback(null, noFapCmd404())
+            respond(noFapCmd404())
             break
     }
+
+    // prevent entered slash console command
+    // from popping up in the channel
+    callback(null, {
+        statusCode: 200, body: '',
+        headers: {
+            'Content-Length': 0
+        }
+    })
 }
