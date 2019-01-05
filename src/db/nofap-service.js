@@ -60,12 +60,28 @@ export default class NofapService {
 
     async getTop() {
         let items = await this.getActive(),
-            res = {top: [], top_reversed: []}
+            res = {valhalla: [], top: [], middle: [], top_reversed: []}
 
-        const getTop = (items, places = 3, threshold = 0.2) => {
+        items = _.reduce(items, (reduced, item) => {
+            let days = getPeriodDuration(item.start, item.ending) >= 30
+            if (days >= 30) {
+                if (res.valhalla.length == 0) res.valhalla = [{streak: '30+', participants: []}]
+                res.valhalla[0].participants.push(item.username)
+            } else {
+                reduced.push(item)
+            }
+            return reduced
+        }, [])
+
+        const getTop = (items, places = 3) => {
             let top = [], i, duration,
                 place = {streak: 0, participants: []},
-                exceedsThreshold, username
+                threshold, exceedsThreshold, username
+
+            if (items.length == 0) return []
+
+            // random formula that looks ok, 1 day - .2, 7 days = .245, 10 days - .5, 20 days - 1 day
+            threshold = Math.max(0.2, 0.005 * Math.pow(getPeriodDuration(items[0].start, items[0].ending), 2))
 
             for (i=0; i<items.length; i++) {
                 duration = getPeriodDuration(items[i].start, items[i].ending)
@@ -97,6 +113,14 @@ export default class NofapService {
         res.top = getTop(items)
         items.reverse()
         res.top_reversed = getTop(items)
+
+        if (items.length) {
+            let minDays = getPeriodDuration(items[0].start, items[0].endging),
+                maxDays = getPeriodDuration(_.last(items).start, _.last(items).endging),
+                streak = minDays == maxDays ? minDays : `${minDays} - ${maxDays}`
+
+            res.middle = [{streak, participants: _.map(items, 'username')}]
+        }
 
         return res
     }

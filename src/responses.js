@@ -74,17 +74,33 @@ export const noFapStats = (stats, nfs) => {
     }
 }
 
+// todo refactor this
 export const topNF = stats => {
-    let text = `*Top boys:*`
+    let text = '*Valhalla:*'
+    text += stats.valhalla.length ?
+        `\n*    30+ days* ${stats.valhalla[0].participants.join(', ')}` :
+        `\n*    30+ days* nobody has deserved blessing of the gods yet`
 
-    text += _.reduce(stats.top, (res, item, index) => {
-        res += `\n*    ${item.streak} days* ${item.participants.join(', ')}`; return res
-    }, '')
+    if (stats.top.length) {
+        text += `\n\n*Top boys:*`
+        text += _.reduce(stats.top, (res, item) => {
+            res += `\n*    ${item.streak} days* ${item.participants.join(', ')}`; return res
+        }, '')
+    }
 
-    text += `\n\n*Rising stars:*`
-    text += _.reduce(stats.top_reversed, (res, item, index) => {
-        res += `\n*    ${item.streak} days* ${item.participants.join(', ')}`; return res
-    }, '')
+    if (stats.middle.length) {
+        text += `\n\n*Middle class::*`
+        text += _.reduce(stats.middle, (res, item) => {
+            res += `\n*    ${item.streak} days* ${item.participants.join(', ')}`; return res
+        }, '')
+    }
+
+    if (stats.top_reversed.length) {
+        text += `\n\n*Rising stars:*`
+        text += _.reduce(stats.top_reversed, (res, item) => {
+            res += `\n*    ${item.streak} days* ${item.participants.join(', ')}`; return res
+        }, '')
+    }
 
     return {
         text, response_type: 'in_channel'
