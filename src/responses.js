@@ -8,21 +8,21 @@ const addCommentMaybe = (message, comment) => {
 }
 
 // switch username to NoFap entry
-export const noFapStarted = (noFap, comment) => {
+export const nfStarted = (nf, comment) => {
     return addCommentMaybe({
         response_type: 'in_channel',
-        text: `:fire: ${noFap.username} started the journey. Type _/nofap about_ for more info.`
+        text: `:fire: ${nf.username} started the journey. Type _/nofap about_ for more info.`
     }, comment)
 }
 
-export const noFapFinished = (noFap, reflections) => {
-    let days = getPeriodDuration(noFap.start, noFap.ending),
-        text = `:sweat_drops: That's it for ${noFap.username}! He hasn't fapped for ${humanizeDuration(days)} :clap: :clap:`
+export const nfFinished = (nf, reflections) => {
+    let days = getPeriodDuration(nf.start, nf.ending),
+        text = `:sweat_drops: That's it for ${nf.username}! He hasn't fapped for ${humanizeDuration(days)} :clap: :clap:`
 
     if (reflections.length) {
         let duration, i; text += "\n\n:pepe-smug: How it happened:"
         for (i=0; i<reflections.length; i++) {
-            duration = ((reflections[i].timestamp - noFap.start)/(1000*60*60*24)).toFixed(2)
+            duration = ((reflections[i].timestamp - nf.start)/(1000*60*60*24)).toFixed(2)
             text += `\n*Day ${duration}*: ${reflections[i].comment}`
         }
     }
@@ -30,16 +30,16 @@ export const noFapFinished = (noFap, reflections) => {
     return {response_type: 'in_channel', text}
 }
 
-export const noFapReflection = (noFap, comment) => {
-    let days = getPeriodDuration(noFap.start, noFap.ending)
+export const nfReflection = (nf, comment) => {
+    let days = getPeriodDuration(nf.start, nf.ending)
 
     return addCommentMaybe({
         response_type: 'in_channel',
-        text: `:thinking_face: It\'s been ${humanizeDuration(days)} of ${noFap.username} NoFap"`
+        text: `:thinking_face: It\'s been ${humanizeDuration(days)} of ${nf.username} NoFap"`
     }, comment)
 }
 
-export const noFapStats = (stats, nfs) => {
+export const nfStats = (stats, nfs) => {
     let startedFormatted = stats.started_at ? tsToDate(stats.started_at): '–',
         text = `Your NoFap stats :information_desk_person:`
 
@@ -132,22 +132,22 @@ export const participantsList = nfs => {
     }
 }
 
-export const activeNoFap404 = () => {
+export const activeNF404 = () => {
     return {
         response_type: 'ephemeral',
         text: ':robot_face: Active NoFap is not found'
     }
 }
 
-export const noFapCmd404 = () => {
+export const nfCmd404 = () => {
     return {
         response_type: 'ephemeral',
         text: ':robot_face: NoFap command is not found'
     }
 }
 
-export const startNoFapDuplicate = (noFap) => {
-    let days = getPeriodDuration(noFap.start, noFap.ending)
+export const startNFDuplicate = (nf) => {
+    let days = getPeriodDuration(nf.start, nf.ending)
 
     return {
         response_type: 'ephemeral',
@@ -162,7 +162,7 @@ export const genericError = error => {
     }
 }
 
-export const noFapAbout = () => {
+export const nfAbout = () => {
     return {
         response_type: 'ephemeral',
         text: `NoFap intention is to help you replace the habit of fapping with something more productive.

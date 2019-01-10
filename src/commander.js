@@ -31,7 +31,7 @@ export default class Commander
 
         return new Promise((resolve, reject) => {
             if (cmds[cmd] === undefined) {
-                return resolve(msgs.noFapCmd404())
+                return resolve(msgs.nfCmd404())
             }
 
             return resolve(this[cmds[cmd]]())
@@ -43,37 +43,37 @@ export default class Commander
     }
 
     async _start() {
-        if (this.hasCurrentNF()) return msgs.startNoFapDuplicate(this.currentNF)
+        if (this.hasCurrentNF()) return msgs.startNFDuplicate(this.currentNF)
         let nf = await this.nfService.start(this.userid, this.username)
         this.arg && await this.reflectionService.reflectOnNF(nf.uuid, this.arg)
 
-        return msgs.noFapStarted(nf, this.arg)
+        return msgs.nfStarted(nf, this.arg)
     }
 
     async _oopsie() {
-        if (!this.hasCurrentNF()) return msgs.activeNoFap404()
+        if (!this.hasCurrentNF()) return msgs.activeNF404()
 
         let nf = await this.nfService.finish(this.currentNF, this.arg)
         this.arg && await this.reflectionService.reflectOnNF(nf.uuid, this.arg)
         let reflections = await this.reflectionService.getReflectionsByNFUuid(nf.uuid)
 
-        return msgs.noFapFinished(nf, reflections)
+        return msgs.nfFinished(nf, reflections)
     }
 
     async _reflect() {
-        if (!this.hasCurrentNF()) return msgs.activeNoFap404()
+        if (!this.hasCurrentNF()) return msgs.activeNF404()
         if (!this.arg) return msgs.genericError('You reflected silently')
 
         this.reflectionService.reflectOnNF(this.currentNF.uuid, this.arg)
 
-        return msgs.noFapReflection(this.currentNF, this.arg)
+        return msgs.nfReflection(this.currentNF, this.arg)
     }
 
     async _stats() {
         let stats = await this.nfService.getUserStats(this.userid),
             nfs = await this.nfService.getByUserid(this.userid)
 
-        return msgs.noFapStats(stats, nfs)
+        return msgs.nfStats(stats, nfs)
     }
 
     async _show() {
@@ -99,6 +99,6 @@ export default class Commander
     }
 
     async _about() {
-        return msgs.noFapAbout()
+        return msgs.nfAbout()
     }
 }
