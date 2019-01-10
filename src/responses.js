@@ -63,7 +63,7 @@ export const noFapStats = (stats, nfs) => {
             {title: `Total`, value: `${stats.total_days} days`, short: true},
             {title: `Avg`, value: `${stats.avg_days} days`, short: true},
             {title: `Current`, value: `${stats.current_days} days`, short: true},
-            {title: `Rank`, value: getSlackRankByDuration(parseFloat(stats.total_days)), short: true}
+            {title: `Rank`, value: getSlackRankByDuration(parseFloat(stats.current_days)), short: true}
         ]
     }]
 
