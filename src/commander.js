@@ -62,8 +62,13 @@ export default class Commander
 
     async _reflect() {
         if (!this.hasCurrentNF()) return msgs.activeNF404()
-        if (!this.arg) return msgs.genericError('You reflected silently')
 
+        if (!this.arg) {
+            this.nfService.touch(this.currentNF) // touch anyway
+            return msgs.genericError('You reflected silently')
+        }
+
+        this.nfService.touch(this.currentNF)
         this.reflectionService.reflectOnNF(this.currentNF.uuid, this.arg)
 
         return msgs.nfReflection(this.currentNF, this.arg)

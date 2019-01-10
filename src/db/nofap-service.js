@@ -10,13 +10,27 @@ export default class NofapService {
     }
 
     async start(userid, username) {
+        let now = new Date().getTime()
+
         let data = {
             uuid: uuid.v1(),
-            start: new Date().getTime(),
-            userid, username
+            userid, username,
+            start: now,
+            seen_at: now,
         }
 
         return this.db.putPromise(this.table, data)
+    }
+
+    async touch(nf) {
+        let now = new Date().getTime()
+
+        return await this.db.updatePromise(
+            this.table,
+            {uuid: nf.uuid},
+            "SET seen_at = :seen_at",
+            {':seen_at': now}
+        )
     }
 
     async finish(nf) {
@@ -33,7 +47,9 @@ export default class NofapService {
     async getActive() {
         let items = await this.db.scanPromise(
             this.table,
-            `attribute_not_exists(ending)`
+            `attribute_not_exists(ending) and seen_at >= :seen_at`,
+            {':seen_at': new Date().getTime() - 1000*60*60*24*7}
+            // nofappers without recent reflection are hidden
         )
         return _.orderBy(items, ['start'], ['asc'])
     }
@@ -105,7 +121,7 @@ export default class NofapService {
                 }
             }
 
-            items.splice(0, i)
+            items.splice(0, i+1)
 
             return top
         }
@@ -132,7 +148,7 @@ export default class NofapService {
 
         if (!hasNFs) return {count: 0}
 
-        let activeNF = await this.getActiveByUserid(userid), // todo refactor to find from noFaps variable
+        let activeNF = await this.getActiveByUserid(userid),
             firstNF = _.minBy(nfs, 'start'),
             durations = _.reduce(nfs, (res, nf) => {
                 res.push(getPeriodDuration(nf.start, nf.ending)); return res

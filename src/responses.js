@@ -168,9 +168,9 @@ export const nfAbout = () => {
         text: `NoFap intention is to help you replace the habit of fapping with something more productive.
 
 What NoFap gives you:
-- motivation to bang chicks;
-- sharper wits;
-- more free time.
+- motivation to bang chicks
+- sharper wits
+- more free time
 
 NoFap slash commands:
 - _/about_ - shows this info
@@ -185,6 +185,7 @@ Rules:
 - Using your hand / flashlight vagina / pillow in order to fap is not allowed
 - If the fap happened you should end current NoFap by typing "/nofap oopsie". Please be honest with yourself and your bros
 - If someone else fapped you it doesn't consider as a NoFap end. Hint: ask for a BJ next time, cowboy!
+- You will not appear in the /top or /participants if you don't reflect at least once a week. You can do it without providing a comment <3
 
 Extra resources:
 - https://github.com/NoFap-anon/NoFap_russian-manual/wiki
