@@ -79,7 +79,7 @@ export default class NofapService {
             res = {valhalla: [], top: [], middle: [], top_reversed: []}
 
         items = _.reduce(items, (reduced, item) => {
-            let days = getPeriodDuration(item.start, item.ending) >= 30
+            let days = getPeriodDuration(item.start, item.ending)
             if (days >= 30) {
                 if (res.valhalla.length == 0) res.valhalla = [{streak: '30+', participants: []}]
                 res.valhalla[0].participants.push(item.username)
@@ -121,7 +121,7 @@ export default class NofapService {
                 }
             }
 
-            items.splice(0, i+1)
+            items.splice(0, i)
 
             return top
         }
